@@ -1,0 +1,42 @@
+# nextjs에서 Token 관리
+
+## 배경
+
+nextjs에서 auth 관련처리는 역시 nextAuth가 대표적인 방법이다.
+하지만 웹뷰를 보여주는 웹을 만들기위해서는 곤란하다.
+cookie에 들어있는 값은 nextAuth를 통해서만 만들어진 암호화된 값들이다.
+
+앱에서 쿠키를 셋팅해주면서 웹뷰로 전단하는데에 문제가 있다는 뜻이다.
+
+이것 외에 문제가 또 있다.
+
+https://next-auth.js.org/v3/tutorials/refresh-token-rotation
+
+axios instance에서 매번 token 값을 사용하려면 계속 nextjs 서버에 session을 가져와야되고 불필요한 서버요청이 많아 질 수 있다.
+
+야매로 이것저것 처리해볼 수 있지만 외부서버와 token으로 통신할 때는 불안정하다는 느낌을 많이 받는다. 다른 좋은 방법을 못찾았다.
+
+nextjs로 만들면 안되었을 수도 있다 하지만. 이미 엎지러진 물.
+
+## 방법
+
+결론 부터 말하면 http Only 쿠키에 refreshToken을 두고 accessToken은 메모리에서 관리하는 것이다.
+
+왜이렇게 하는 것이냐?
+
+| XSS (Cross site scripting) 취약점
+
+나쁜녀석들이 input 등에 자바스크립트 코드를 실행시켜서 로컬스토리지나 쿠키에 저장된 Token에 접근하거나 할 수 있다.
+
+|CSRF (Cross-site Request Forgery) 공격
+
+나쁜녀석들 서버에 요청을 시켜서 쿠키에 있는 accessToken값에 접근하여 나쁜녀석들 서버에서 accessToken를 알아낼 수 있다.
+
+그렇기에 http only 를 사용해서 refreshToken cookie 값을 이용하고
+accessToken은 메모리에 둔다.
+
+## 문제
+
+어디 메모리에 두지...?
+
+https://velog.io/@yaytomato/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%90%EC%84%9C-%EC%95%88%EC%A0%84%ED%95%98%EA%B2%8C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0
