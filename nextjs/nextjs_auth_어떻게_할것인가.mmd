@@ -10,17 +10,25 @@ cookie에 들어있는 값은 nextAuth를 통해서만 만들어진 암호화된
 
 이것 외에 문제가 또 있다.
 
-https://next-auth.js.org/v3/tutorials/refresh-token-rotation
+nextauth discussions에 올라온 내용이다.
 
-axios instance에서 매번 token 값을 사용하려면 계속 nextjs 서버에 session을 가져와야되고 불필요한 서버요청이 많아 질 수 있다.
+https://github.com/nextauthjs/next-auth/discussions/3550
 
-야매로 이것저것 처리해볼 수 있지만 외부서버와 token으로 통신할 때는 불안정하다는 느낌을 많이 받는다. 다른 좋은 방법을 못찾았다.
+axios instance에서 매번 token 값을 사용하려면 계속 nextjs 서버에 session을 가져와야되고 불필요한 서버요청이 많아 질 수 있다는 것이다.
+
+야매로 이것저것 처리해볼 수 있지만 외부서버와 token으로 통신할 때는 최선의 방법이 아니라는 느낌을 많이 받는다.
+
+위에 디스커션에도 결론에 다다르지 못했다.
+
+서버요청 많을 수도 있다. 무시하고 넘어가도 된다. 하지만 내 가장 큰 문제는 앱과 웹 사이 쿠키 셋팅이다.
 
 nextjs로 만들면 안되었을 수도 있다 하지만. 이미 엎지러진 물.
 
+nextAuth를 버리자.
+
 ## 방법
 
-결론 부터 말하면 http Only 쿠키에 refreshToken을 두고 accessToken은 메모리에서 관리하는 것이다.
+결론 부터 말하면 흔한 로그인 방법이다. http Only 쿠키에 refreshToken을 두고 accessToken은 메모리에서 관리하는 것이다.
 
 왜이렇게 하는 것이냐?
 
@@ -37,6 +45,13 @@ accessToken은 메모리에 둔다.
 
 ## 문제
 
-어디 메모리에 두지...?
+메모리 어디에 둘것인가? 라는 문제가 있다.
+
+일반 React App이라면 여러가지 상태관리 라이브러리 중에 하나를 선택했으면 될 것이다.
+하지만 대부분의 상태관리 라이브러리는 useContext를 이용하여 구현되어 있다.
+
+그렇기에 강제로 Zustand를 선택해야 한다.
+
+
 
 https://velog.io/@yaytomato/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%90%EC%84%9C-%EC%95%88%EC%A0%84%ED%95%98%EA%B2%8C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0
