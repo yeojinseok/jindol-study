@@ -52,6 +52,30 @@ accessToken은 메모리에 둔다.
 
 그렇기에 강제로 Zustand를 선택해야 한다.
 
+zustand는 observe를 이용하여 구현되어 있어서 state를 사용하지 않고 관리할 수 있다.
+
+zustand를 이용해서 구현하려면 persist asyncStorage를 사용해야한다.
+주의해야할 점은 받아오기전과 실제로 없을 때 구분할 플래그를 둬야된다는 것이다.
+
+## 구현 시나리오
+| 로그인
+1. 로그인시 서버에서 Cookie에 refreshToken을 담아주고 Accesstoken은 Response로 온다.
+2. accesstoken은 store에 넣으며 로그인 처리를 한다.
+
+| 로그아웃
+1. API route signout에서 http only cookie를 제거하고 store에 로그인 정보도 리셋 한다.
+2. redirect /
+
+| 새로고침 or 재접속
+1. persistStore에서 accesstoken 발급 요청을 보낸다. 
+2. 로그인 처리를 한다.
+3. 발급 실패시에는 refreshtoken 만료로 로그아웃 처리한다.
+
+
+
+
+
+
 https://docs.pmnd.rs/zustand/integrations/persisting-store-data#hydration-and-asynchronous-storages
 https://stackoverflow.com/questions/65160156/remove-cookies-and-sign-out-server-side-in-next-js
 
